@@ -2,14 +2,32 @@
 layout: default
 title: Projets
 permalink: /projets/
+description: Projets Data Engineering réalisés par Eric Ginez.
 ---
 
-<div class="container page-container" markdown="1">
+<section class="projects-page">
+  <div class="container">
+    <header class="projects-heading">
+      <p class="eyebrow">
+        Réalisations
+      </p>
 
-# Projets
+      <h1>Projets Data Engineering</h1>
 
-Présentation des projets réalisés durant le parcours Data Engineer.
+      <p>
+        Ces projets couvrent l’ensemble du cycle de vie des données :
+        analyse, modélisation, ingestion, stockage, transformation,
+        orchestration, qualité, cloud, visualisation et intelligence
+        artificielle.
+      </p>
+    </header>
 
-Cette section est en cours de construction.
+    {% assign ordered_projects = site.projects | sort: "order" %}
 
-</div>
+    <div class="projects-grid">
+      {% for project in ordered_projects %}
+        {% include project-card.html project=project %}
+      {% endfor %}
+    </div>
+  </div>
+</section>

@@ -1,0 +1,86 @@
+---
+layout: default
+---
+
+<article class="project-page">
+  <header class="project-hero">
+    <div class="container project-hero-grid">
+      <div class="project-hero-content">
+        <p class="eyebrow">
+          Projet {{ page.project_number }} · Parcours Data Engineer
+        </p>
+
+        <h1>{{ page.title }}</h1>
+
+        {% if page.subtitle %}
+          <p class="project-subtitle">
+            {{ page.subtitle }}
+          </p>
+        {% endif %}
+
+        {% if page.summary %}
+          <p class="project-summary">
+            {{ page.summary }}
+          </p>
+        {% endif %}
+
+        <div class="project-actions">
+          {% if page.github_url %}
+            <a
+              class="button button-primary"
+              href="{{ page.github_url }}"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              Consulter le dépôt GitHub
+            </a>
+          {% endif %}
+
+          <a
+            class="button button-secondary"
+            href="{{ '/projets/' | relative_url }}"
+          >
+            Retour aux projets
+          </a>
+        </div>
+      </div>
+
+      <aside class="project-metadata">
+        {% if page.status %}
+          <div class="metadata-item">
+            <span>Statut</span>
+            <strong>{{ page.status }}</strong>
+          </div>
+        {% endif %}
+
+        {% if page.domain %}
+          <div class="metadata-item">
+            <span>Domaine</span>
+
+            <ul>
+              {% for item in page.domain %}
+                <li>{{ item }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+
+        {% if page.technologies %}
+          <div class="metadata-item">
+            <span>Technologies</span>
+
+            <ul class="metadata-tags">
+              {% for technology in page.technologies %}
+                <li>{{ technology }}</li>
+              {% endfor %}
+            </ul>
+          </div>
+        {% endif %}
+      </aside>
+    </div>
+  </header>
+
+  <div class="container project-body">
+    {{ content }}
+  </div>
+</article>
