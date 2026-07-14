@@ -18,29 +18,24 @@
 
   <meta
     name="description"
-    content="{{ page.description | default: site.description }}"
+    content="{{ page.description | default: site.description | strip_html | normalize_whitespace }}"
+  >
+
+  <link
+    rel="stylesheet"
+    href="{{ '/assets/css/main.css' | relative_url }}"
   >
 
   {% seo %}
 </head>
 
 <body>
-  <header>
-    <nav>
-      <a href="{{ '/' | relative_url }}">
-        {{ site.author.name }}
-      </a>
-    </nav>
-  </header>
+  {% include header.html %}
 
-  <main>
+  <main class="site-main">
     {{ content }}
   </main>
 
-  <footer>
-    <p>
-      © {{ site.time | date: "%Y" }} {{ site.author.name }}
-    </p>
-  </footer>
+  {% include footer.html %}
 </body>
 </html>

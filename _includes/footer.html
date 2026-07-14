@@ -1,0 +1,26 @@
+<footer class="site-footer">
+  <div class="container footer-inner">
+    <div>
+      <strong>{{ site.author.name }}</strong>
+      <p>Portfolio professionnel de Data Engineer</p>
+    </div>
+
+    <div class="footer-links">
+      <a
+        href="https://github.com/{{ site.author.github }}"
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        GitHub
+      </a>
+
+      <a href="{{ '/contact/' | relative_url }}">
+        Contact
+      </a>
+    </div>
+
+    <p class="copyright">
+      © {{ site.time | date: "%Y" }} {{ site.author.name }}
+    </p>
+  </div>
+</footer>

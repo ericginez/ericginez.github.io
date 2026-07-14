@@ -1,0 +1,14 @@
+- label: Accueil
+  url: /
+
+- label: Projets
+  url: /projets/
+
+- label: Compétences
+  url: /competences/
+
+- label: Parcours
+  url: /parcours/
+
+- label: Contact
+  url: /contact/

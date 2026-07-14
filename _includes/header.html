@@ -1,0 +1,25 @@
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="site-brand" href="{{ '/' | relative_url }}">
+      <span class="brand-name">{{ site.author.name }}</span>
+      <span class="brand-role">{{ site.author.role }}</span>
+    </a>
+
+    <nav class="site-navigation" aria-label="Navigation principale">
+      <ul class="navigation-list">
+        {% for item in site.data.navigation %}
+          {% assign item_url = item.url | relative_url %}
+
+          <li>
+            <a
+              class="navigation-link{% if page.url == item.url %} is-active{% endif %}"
+              href="{{ item_url }}"
+            >
+              {{ item.label }}
+            </a>
+          </li>
+        {% endfor %}
+      </ul>
+    </nav>
+  </div>
+</header>
