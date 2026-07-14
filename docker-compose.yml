@@ -1,0 +1,24 @@
+services:
+  portfolio:
+    image: ruby:3.3
+    container_name: eric_portfolio_jekyll
+
+    working_dir: /srv/jekyll
+
+    command: >
+      sh -c "
+      bundle config set path vendor/bundle &&
+      bundle install &&
+      bundle exec jekyll serve
+      --host 0.0.0.0
+      --port 4000
+      --livereload
+      --force_polling
+      "
+
+    volumes:
+      - .:/srv/jekyll
+
+    ports:
+      - "4000:4000"
+      - "35729:35729"

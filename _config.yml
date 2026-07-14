@@ -1,0 +1,45 @@
+title: "Eric Ginez — Data Engineer"
+description: >-
+  Portfolio professionnel d'Eric Ginez, Data Engineer spécialisé dans
+  les pipelines de données, l'orchestration, le cloud et les systèmes RAG.
+
+url: "https://ericginez.github.io"
+baseurl: ""
+
+lang: "fr-FR"
+timezone: "Europe/Paris"
+
+author:
+  name: "Eric Ginez"
+  role: "Data Engineer"
+  github: "ericginez"
+
+repository: "ericginez/ericginez.github.io"
+
+collections:
+  projects:
+    output: true
+    permalink: /projets/:name/
+
+defaults:
+  - scope:
+      path: ""
+    values:
+      layout: default
+
+  - scope:
+      path: ""
+      type: projects
+    values:
+      layout: project
+
+plugins:
+  - jekyll-seo-tag
+  - jekyll-sitemap
+
+exclude:
+  - docker-compose.yml
+  - Gemfile
+  - Gemfile.lock
+  - README.md
+  - vendor
