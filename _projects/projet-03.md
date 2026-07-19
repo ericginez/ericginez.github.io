@@ -50,6 +50,10 @@ Ces sources possèdent des structures et des niveaux de granularité différents
 Elles doivent être préparées, rapprochées et intégrées dans un modèle
 relationnel cohérent avant de pouvoir être interrogées avec SQL.
 
+## Présentation
+
+- [Consulter la présentation de soutenance au format PDF](https://github.com/ericginez/real-estate-sql-database/blob/main/presentation/projet-03-base-sql-transactions-immobilieres.pdf)
+
 ## Objectifs
 
 Le projet devait permettre de :
@@ -497,12 +501,16 @@ Paris 2e arrondissement arrive en première position avec :
 
 ```text
 .
+├── database/
+│   └── projet-03.db
 ├── docs/
 │   ├── conception.md
 │   ├── dictionnaire-donnees.md
 │   └── resultats-analytiques.md
 ├── model/
 │   └── modele-relationnel.architect
+├── presentation/
+│   └── projet-03-base-sql-transactions-immobilieres.pdf
 ├── sql/
 │   ├── controles-integrite.sql
 │   ├── requetes-analytiques.sql
@@ -514,8 +522,8 @@ Paris 2e arrondissement arrive en première position avec :
 
 ## Données non publiées
 
-Les sources, les classeurs transformés et la base SQLite sont conservés
-localement dans le dossier :
+Les sources et les classeurs transformés sont conservés localement dans le
+dossier :
 
 ```text
 local_data/
@@ -525,12 +533,14 @@ Ce dossier est exclu du dépôt Git.
 
 Le dépôt public contient uniquement :
 
+- la base SQLite finale ;
 - le modèle relationnel ;
 - le schéma SQL ;
 - les contrôles d’intégrité ;
 - les requêtes analytiques ;
 - les résultats agrégés ;
-- la documentation technique.
+- la documentation technique ;
+- la présentation de soutenance.
 
 ## Livrables
 
@@ -538,12 +548,13 @@ Le projet comprend :
 
 - un modèle relationnel SQL Power Architect ;
 - un schéma SQLite reproductible ;
-- une base SQLite locale ;
+- une base SQLite finale publiée dans le dépôt ;
 - des contrôles d’intégrité SQL ;
 - douze requêtes analytiques ;
 - un dictionnaire de données ;
 - une documentation de conception ;
-- un document présentant les résultats complets.
+- un document présentant les résultats complets ;
+- la base SQLite finale ;- une présentation de soutenance au format PDF.
 
 ## Compétences développées
 
@@ -573,7 +584,6 @@ Le projet présente plusieurs limites :
 
 - les données couvrent uniquement le premier semestre 2020 ;
 - la préparation initiale a été effectuée dans Excel ;
-- la base SQLite n’est pas publiée dans le dépôt ;
 - les valeurs foncières égales à zéro ne peuvent pas être interprétées comme des
   prix de marché ;
 - certaines mutations peuvent concerner plusieurs lots ou plusieurs biens ;
