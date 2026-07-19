@@ -55,6 +55,10 @@ Le projet ne se limite pas à l’import du fichier. Il comprend également la
 conversion des types, la création d’index, l’identification des anomalies de
 qualité et l’automatisation des tests unitaires avec GitHub Actions.
 
+## Présentation
+
+- [Consulter la présentation de soutenance au format PDF](https://github.com/ericginez/healthcare-mongodb-migration/blob/main/presentation/projet-05-migration-donnees-medicales.pdf)
+
 ## Objectifs
 
 La solution répond aux objectifs suivants :
@@ -141,8 +145,6 @@ Le service `integrity_checks` :
 ├── .github/
 │   └── workflows/
 │       └── ci.yml
-├── data/
-│   └── healthcare_dataset.csv
 ├── migration/
 │   ├── .dockerignore
 │   ├── Dockerfile
@@ -154,6 +156,8 @@ Le service `integrity_checks` :
 │   ├── import_healthcare_dataset_to_mongodb.ipynb
 │   ├── integrity_checks_mongodb.ipynb
 │   └── unit_tests.ipynb
+├── presentation/
+│   └── projet-05-migration-donnees-medicales.pdf
 ├── reports/
 │   └── integrity_report.txt
 ├── unit_tests/
@@ -169,6 +173,12 @@ Le service `integrity_checks` :
 ```
 
 ## Données
+
+Le fichier source est conservé localement dans :
+
+```text
+data/healthcare_dataset.csv
+```
 
 Le fichier source contient :
 
@@ -610,6 +620,25 @@ docker compose down --remove-orphans
 ```
 
 Le volume MongoDB est conservé par défaut.
+
+## Livrables
+
+Le projet comprend :
+
+- un script Python de migration du fichier CSV vers MongoDB ;
+- un script automatisé de contrôles d’intégrité ;
+- une architecture Docker Compose composée de trois services ;
+- un Dockerfile et les dépendances Python nécessaires à l’exécution ;
+- une collection MongoDB contenant 55 500 documents typés ;
+- cinq index simples et un index composé ;
+- un rapport de qualité des données ;
+- onze tests unitaires Python ;
+- un workflow d’intégration continue GitHub Actions ;
+- des notebooks documentant les principales étapes de développement ;
+- un fichier `.env.example` dépourvu de secrets ;
+- une documentation d’installation et d’exploitation ;
+- une présentation de soutenance au format PDF ;
+- un dépôt GitHub public documenté.
 
 ## Résultats obtenus
 
