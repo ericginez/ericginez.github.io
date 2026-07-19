@@ -51,6 +51,10 @@ première présélection de pays.
 Cette analyse constitue un outil exploratoire d’aide à la décision. Elle ne
 remplace pas une étude commerciale complète.
 
+## Présentation
+
+- [Consulter la présentation de soutenance au format PDF](https://github.com/ericginez/education-systems-analysis/blob/main/presentation/projet-02-analyse-systemes-educatifs.pdf)
+
 ## Objectifs
 
 Le projet devait permettre de :
@@ -334,6 +338,7 @@ Le projet comprend :
 - une documentation méthodologique ;
 - un environnement Python reproductible avec Poetry ;
 - un dépôt GitHub documenté.
+- une présentation de soutenance au format PDF.
 
 ## Compétences développées
 
