@@ -56,6 +56,10 @@ et celui calculé par l’ERP.
 L’objectif du projet était d’identifier la cause de cet écart, de contrôler la
 cohérence de l’environnement de données et de proposer un modèle corrigé.
 
+## Présentation
+
+- [Consulter la présentation de soutenance au format PDF](https://github.com/ericginez/sales-data-environment-audit/blob/main/presentation/projet-04-audit-environnement-donnees-ventes.pdf)
+
 ## Objectifs
 
 L’audit devait permettre de :
@@ -336,7 +340,8 @@ Le dépôt public contient uniquement :
 - le modèle relationnel initial ;
 - le schéma SQL corrigé ;
 - les constats agrégés ;
-- les règles métier.
+- les règles métier ;
+- la présentation de soutenance.
 
 ## Organisation du dépôt
 
@@ -348,6 +353,8 @@ Le dépôt public contient uniquement :
 ├── model/
 │   ├── modele_initial.architect
 │   └── schema_corrige.sql
+├── presentation/
+│   └── projet-04-audit-environnement-donnees-ventes.pdf
 ├── .gitattributes
 ├── .gitignore
 └── README.md
@@ -363,7 +370,8 @@ Le projet comprend :
 - un dictionnaire de données ;
 - un tableau de bord Power BI corrigé, conservé localement ;
 - une documentation de la cause racine et de la correction ;
-- un dépôt public dépourvu de données sensibles.
+- un dépôt public dépourvu de données sensibles ;
+- une présentation de soutenance au format PDF.
 
 ## Résultats obtenus
 
