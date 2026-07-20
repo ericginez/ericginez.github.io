@@ -55,6 +55,10 @@ L’objectif est de mettre en place une chaîne reproductible allant de
 l’ingestion des données brutes jusqu’à la création de tables de faits et
 de dimensions testées avec dbt.
 
+## Présentation
+
+- [Consulter la présentation de soutenance au format PDF](https://github.com/ericginez/weather-data-infrastructure/blob/main/presentation/projet-08-infrastructure-donnees-meteorologiques.pdf)
+
 ## Objectifs
 
 Le projet répond aux objectifs suivants :
@@ -399,6 +403,57 @@ Le `.gitignore` exclut notamment :
 La clé privée utilisée pour accéder à EC2 reste uniquement sur la machine
 locale.
 
+## Organisation du dépôt
+
+Le dépôt rassemble les scripts de préparation des données, le projet dbt,
+l’environnement PostgreSQL local, la configuration de conteneurisation et la
+documentation du projet.
+
+```text
+.
+├── docker/
+│   └── docker-compose.yml
+├── presentation/
+│   └── projet-08-infrastructure-donnees-meteorologiques.pdf
+├── projet8_dbt/
+│   ├── data/
+│   │   ├── convert_weatherug.py
+│   │   ├── extract_infoclimat_observations.py
+│   │   └── extract_infoclimat_stations.py
+│   ├── docker_dbt/
+│   │   └── profiles.yml
+│   ├── macros/
+│   │   └── generate_schema_name.sql
+│   ├── models/
+│   │   ├── sources.yml
+│   │   ├── staging/
+│   │   ├── intermediate/
+│   │   └── marts/
+│   ├── Dockerfile
+│   ├── dbt_project.yml
+│   ├── package-lock.yml
+│   └── packages.yml
+├── .gitignore
+├── poetry.lock
+├── pyproject.toml
+└── README.md
+```
+
+Les principaux éléments ont les rôles suivants :
+
+| Élément | Rôle |
+|---|---|
+| `projet8_dbt/data/` | Extraction et conversion des données sources |
+| `projet8_dbt/models/staging/` | Typage, renommage et normalisation |
+| `projet8_dbt/models/intermediate/` | Union et harmonisation des sources |
+| `projet8_dbt/models/marts/` | Construction de la dimension et de la table de faits |
+| `projet8_dbt/Dockerfile` | Construction de l’image dbt |
+| `docker/docker-compose.yml` | Exécution locale de PostgreSQL |
+| `presentation/` | Présentation de soutenance au format PDF |
+
+Les données brutes, les secrets, les journaux et les artefacts générés par dbt
+ne sont pas versionnés.
+
 ## Résultats
 
 Le projet aboutit à une infrastructure comprenant :
@@ -416,6 +471,32 @@ Le projet aboutit à une infrastructure comprenant :
 - une documentation générée par dbt ;
 - une image Docker publiée dans Amazon ECR ;
 - une tâche dbt planifiée dans Amazon ECS.
+
+## Livrables
+
+Le projet comprend :
+
+- les scripts Python d’extraction des données Infoclimat ;
+- le script de conversion des fichiers Weather Underground ;
+- un environnement PostgreSQL local défini avec Docker Compose ;
+- un projet dbt structuré en couches `staging`, `intermediate` et `marts` ;
+- quatre modèles de staging ;
+- deux modèles intermédiaires ;
+- une dimension finale des stations météorologiques ;
+- une table de faits des observations météorologiques ;
+- des tests dbt de complétude, d’unicité, de plages métier et d’intégrité
+  référentielle ;
+- la documentation et le lineage générés par dbt ;
+- un `Dockerfile` permettant de construire l’image du projet dbt ;
+- une image Docker dbt publiée dans Amazon ECR ;
+- une infrastructure d’ingestion Airbyte déployée sur Amazon EC2 ;
+- une base PostgreSQL déployée dans Amazon RDS ;
+- une tâche dbt exécutée avec Amazon ECS et AWS Fargate ;
+- une planification automatique avec Amazon EventBridge Scheduler ;
+- des journaux et des métriques centralisés dans Amazon CloudWatch ;
+- une présentation de soutenance au format PDF ;
+- une documentation technique du projet ;
+- un dépôt GitHub public documenté.
 
 ## Difficultés rencontrées
 
