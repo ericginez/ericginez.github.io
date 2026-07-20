@@ -61,6 +61,10 @@ SiteEUIWN(kBtu/sf)
 Elle représente l’intensité énergétique du site, exprimée en kBtu par pied
 carré et normalisée selon les conditions météorologiques.
 
+## Présentation
+
+- [Consulter la présentation de soutenance au format PDF](https://github.com/ericginez/seattle-building-energy-prediction/blob/main/presentation/projet-06-prediction-energetique-batiments-seattle.pdf)
+
 ## Objectifs
 
 Le projet répond aux objectifs suivants :
@@ -651,6 +655,50 @@ README.md
 seattle_energy_rf:6iuuoyyzhwbgekgq
 ```
 
+## Organisation du dépôt
+
+Le dépôt est organisé en deux niveaux :
+
+- la racine contient les données, le notebook de modélisation, le code de
+  développement de l’API et l’environnement principal du projet ;
+- le dossier `app/` contient une application BentoML autonome destinée au
+  packaging et à la containerisation.
+
+```text
+.
+├── app/
+│   ├── src/
+│   │   ├── __init__.py
+│   │   ├── schema.py
+│   │   └── service.py
+│   ├── bentofile.yaml
+│   ├── poetry.lock
+│   ├── pyproject.toml
+│   └── README.md
+├── notebooks/
+│   └── template_modelistation_supervisee.ipynb
+├── presentation/
+│   └── projet-06-prediction-energetique-batiments-seattle.pdf
+├── src/
+│   ├── __init__.py
+│   ├── schema.py
+│   └── service.py
+├── 2016_Building_Energy_Benchmarking.csv
+├── Dictionnary.csv
+├── LargestPropertyUseType.csv
+├── bentoml.yaml
+├── poetry.lock
+├── pyproject.toml
+├── .gitignore
+└── README.md
+```
+
+Le modèle entraîné est enregistré dans le Model Store BentoML local et n’est
+pas directement versionné dans Git.
+
+La duplication entre `src/` et `app/src/` distingue le code utilisé pendant le
+développement du contexte autonome destiné à la construction du Bento.
+
 ## Containerisation
 
 Après la construction du Bento, une image Docker peut être produite avec :
@@ -714,6 +762,28 @@ Le projet aboutit à :
 - cinq endpoints applicatifs ;
 - un contexte de build autonome ;
 - une préparation à la containerisation et au déploiement cloud.
+
+## Livrables
+
+Le projet comprend :
+
+- le jeu de données énergétique public de Seattle et son dictionnaire ;
+- un notebook documentant le nettoyage, le feature engineering et la
+  modélisation ;
+- un jeu final de 1 536 bâtiments non résidentiels ;
+- un pipeline scikit-learn intégrant le préprocessing et le modèle ;
+- une comparaison de cinq modèles de régression ;
+- un `RandomForestRegressor` optimisé avec `GridSearchCV` ;
+- une analyse d’interprétabilité réalisée avec SHAP ;
+- un modèle enregistré et versionné dans le Model Store BentoML ;
+- une API REST BentoML comprenant cinq endpoints applicatifs ;
+- des schémas Pydantic de validation des requêtes ;
+- un contexte BentoML autonome dans le dossier `app/` ;
+- une configuration de packaging avec `bentofile.yaml` ;
+- une préparation à la containerisation Docker et au déploiement Cloud Run ;
+- une documentation technique et d’exploitation ;
+- une présentation de soutenance au format PDF ;
+- un dépôt GitHub public documenté.
 
 ## Difficultés rencontrées
 
