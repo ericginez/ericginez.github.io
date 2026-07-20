@@ -56,6 +56,10 @@ L’analyse finale porte principalement sur les annonces parisiennes, avec
 une extraction depuis MongoDB, des traitements réalisés avec Polars et
 une restitution dans Power BI.
 
+## Présentation
+
+- [Consulter la présentation de soutenance au format PDF](https://github.com/ericginez/mongodb-rental-listings-analysis/blob/main/presentation/projet-07-analyse-annonces-locatives.pdf)
+
 ## Objectifs
 
 Le projet répond aux objectifs suivants :
@@ -87,11 +91,10 @@ Le fichier parisien représente environ 185 Mo et contient près de
 
 Les fichiers sources ne sont pas publiés dans le dépôt GitHub en raison
 de leur volume. Le dépôt contient toutefois le dictionnaire de données
-dans deux formats :
+au format CSV :
 
 ```text
 Data Dictionary.csv
-Data Dictionary.xlsx
 ```
 
 Ce dictionnaire documente notamment :
@@ -413,6 +416,51 @@ Cette stratégie permet de publier le code, le notebook, le dictionnaire
 de données et le rapport sans intégrer les volumes MongoDB ni les données
 sources volumineuses.
 
+## Organisation du dépôt
+
+Le dépôt rassemble le notebook d’analyse, le dictionnaire de données, le
+rapport Power BI et la documentation du projet.
+
+```text
+.
+├── presentation/
+│   └── projet-07-analyse-annonces-locatives.pdf
+├── .gitattributes
+├── .gitignore
+├── Data Dictionary.csv
+├── Projet 07.pbix
+├── Projet_07.ipynb
+├── poetry.lock
+├── pyproject.toml
+└── README.md
+```
+
+Les principaux fichiers ont les rôles suivants :
+
+| Élément | Rôle |
+|---|---|
+| `Projet_07.ipynb` | Analyse MongoDB, traitements Polars et calcul des indicateurs |
+| `Projet 07.pbix` | Rapport de restitution Power BI |
+| `Data Dictionary.csv` | Description des champs des annonces |
+| `presentation/` | Présentation de soutenance au format PDF |
+| `pyproject.toml` | Dépendances et configuration de l’environnement Python |
+| `.gitattributes` | Configuration de Git LFS pour le fichier Power BI |
+| `.gitignore` | Exclusion des données volumineuses et des fichiers locaux |
+
+Les fichiers d’annonces et les volumes internes MongoDB restent exclus du
+dépôt :
+
+```text
+listings_Paris.csv
+listings_Lyon.csv
+mongo-rs/
+mongo-shard/
+.ipynb_checkpoints/
+```
+
+Le dépôt permet donc de consulter l’analyse et ses résultats, mais ne permet
+pas encore de reconstruire automatiquement les architectures MongoDB locales.
+
 ## Difficultés rencontrées
 
 ### Gestion du volume de données
@@ -475,6 +523,26 @@ Le projet aboutit à :
 - une expérimentation du sharding ;
 - un dépôt GitHub documenté et sécurisé ;
 - un versionnement du rapport avec Git LFS.
+
+## Livrables
+
+Le projet comprend :
+
+- une base documentaire MongoDB restaurée à partir des annonces locatives ;
+- une collection de 95 885 annonces parisiennes analysées ;
+- l’intégration de 9 973 annonces lyonnaises dans la base commune ;
+- un notebook Jupyter utilisant PyMongo et Polars ;
+- des requêtes MongoDB et des agrégations métier ;
+- une analyse des types de logements et des catégories d’hôtes ;
+- une analyse géographique des annonces parisiennes ;
+- une estimation de la disponibilité mensuelle des logements ;
+- un rapport Power BI versionné avec Git LFS ;
+- un dictionnaire de données au format CSV ;
+- une expérimentation locale d’un replica set MongoDB ;
+- une expérimentation locale d’un cluster shardé entre Paris et Lyon ;
+- une présentation de soutenance au format PDF ;
+- une documentation technique dans le README ;
+- un dépôt GitHub public documenté.
 
 ## Limites
 
