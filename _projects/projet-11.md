@@ -7,9 +7,9 @@ status: "Terminé"
 
 summary: >-
   Conception d’un système Retrieval-Augmented Generation capable
-  de rechercher des événements culturels pertinents dans une base
-  vectorielle FAISS et de générer des recommandations contextualisées
-  avec un modèle Mistral.
+  de collecter et préparer des événements culturels parisiens,
+  de les indexer dans FAISS et de générer des recommandations
+  contextualisées avec un modèle Mistral.
 
 domain:
   - Intelligence artificielle
@@ -17,236 +17,539 @@ domain:
   - Traitement du langage naturel
   - Recherche vectorielle
   - Qualité des données
+  - Data Engineering
 
 technologies:
   - Python
   - LangChain
-  - Mistral
+  - LangChain MistralAI
+  - Mistral AI
   - FAISS
   - OpenAgenda
   - Pandas
-  - Jupyter
+  - Parquet
+  - Pytest
+  - Git
+  - GitHub
 
 github_url: "https://github.com/ericginez/RAG-chatbot"
 ---
 
 ## Contexte
 
-Une organisation souhaite faciliter la découverte d’événements culturels
-à Paris à partir de questions formulées en langage naturel.
+Puls-Events est une entreprise spécialisée dans la gestion et la
+valorisation d’événements culturels.
 
-Les données disponibles proviennent de l’API OpenAgenda. Elles doivent
-être collectées, nettoyées, enrichies et indexées afin qu’un assistant
-conversationnel puisse retrouver les événements les plus pertinents et
-produire une réponse contextualisée.
+Elle souhaite proposer un assistant conversationnel capable de recommander
+des événements à partir d’une question formulée en langage naturel.
 
-Le système doit également reconnaître les questions situées hors de son
-périmètre afin d’éviter de générer des réponses non fondées.
+Les informations disponibles proviennent de données publiques OpenAgenda.
+Elles doivent être collectées, nettoyées, filtrées et indexées afin que le
+chatbot puisse retrouver les événements les plus pertinents avant de
+générer une réponse contextualisée.
+
+Le système doit également reconnaître les demandes situées hors de son
+périmètre et éviter de produire des recommandations non fondées.
+
+## Présentation
+
+- [Consulter la présentation de soutenance au format PDF](https://github.com/ericginez/RAG-chatbot/blob/main/presentation/projet-11-chatbot-rag.pdf)
 
 ## Objectifs
 
-Le projet répond à plusieurs objectifs :
+Le projet répond aux objectifs suivants :
 
-- collecter des événements culturels depuis une API externe ;
+- collecter des événements culturels depuis une API publique ;
+- limiter la collecte à Paris et aux événements récents ;
+- appliquer un filtrage métier sur les spectacles vivants et audiovisuels ;
 - nettoyer et normaliser les données récupérées ;
-- transformer les événements en documents exploitables par un système RAG ;
-- segmenter les documents en unités adaptées à la recherche sémantique ;
-- générer des représentations vectorielles ;
-- indexer les vecteurs dans une base FAISS ;
-- retrouver les événements pertinents à partir d’une requête utilisateur ;
-- générer des recommandations en français avec un modèle Mistral ;
-- limiter les hallucinations et gérer les demandes hors périmètre ;
-- évaluer la pertinence des réponses produites.
+- produire des exports aux formats CSV, JSON et Parquet ;
+- transformer les événements en documents textuels exploitables ;
+- segmenter les documents en chunks ;
+- générer des embeddings avec Mistral ;
+- indexer les vecteurs dans FAISS ;
+- rechercher les événements les plus proches d’une requête ;
+- générer des recommandations en français ;
+- encadrer les réponses avec un prompt métier ;
+- gérer explicitement les demandes hors périmètre ;
+- tester les données, l’environnement et l’index vectoriel ;
+- évaluer la qualité fonctionnelle des réponses.
 
-## Périmètre des données
+## Périmètre fonctionnel
 
-Le système exploite les événements culturels organisés à Paris au cours
-des douze derniers mois.
+Le système traite uniquement les événements :
 
-La collecte est centrée sur plusieurs catégories culturelles :
+- situés à Paris ;
+- datant de moins d’un an ;
+- relevant des spectacles vivants ou audiovisuels.
 
-- concerts ;
-- festivals ;
-- théâtre ;
-- danse ;
-- opéra ;
-- cirque ;
-- humour et stand-up ;
-- performances ;
-- cinéma et projections ;
-- avant-premières ;
-- spectacles.
+Les catégories retenues comprennent notamment :
 
-Après collecte et préparation, le corpus comprend **1 336 événements**
-culturels.
+```text
+Concert
+Festival
+Théâtre
+Danse
+Opéra
+Cirque
+Humour
+Stand-up
+Performance
+Cinéma
+Projection
+Avant-première
+Spectacle
+```
+
+Les expositions, musées et autres événements hors périmètre métier ne sont
+pas conservés dans le corpus final.
+
+## Source et préparation des données
+
+Le script :
+
+```text
+scripts/extract_openagenda.py
+```
+
+interroge l’API OpenData Île-de-France utilisée pour exposer les événements
+OpenAgenda.
+
+Le traitement applique successivement :
+
+1. un filtrage géographique sur Paris ;
+2. un filtrage temporel sur les événements de moins d’un an ;
+3. un filtrage métier sur les catégories culturelles retenues ;
+4. un nettoyage des champs textuels ;
+5. une harmonisation des dates et métadonnées ;
+6. la création d’un champ textuel consolidé pour la vectorisation ;
+7. l’export des données préparées.
+
+Après les filtres géographique et temporel, le jeu comprend :
+
+```text
+6 156 événements
+```
+
+Après le filtrage métier, le corpus final contient :
+
+```text
+1 336 événements
+```
+
+Les données nettoyées sont exportées aux formats :
+
+```text
+CSV
+JSON
+Parquet
+```
 
 ## Architecture du système RAG
 
-Le système repose sur une chaîne de traitement en plusieurs étapes :
+```text
+OpenAgenda
+     │
+     ▼
+Extraction et filtrage
+     │
+     ▼
+Nettoyage et consolidation textuelle
+     │
+     ▼
+Chunking
+     │
+     ▼
+Embeddings Mistral
+     │
+     ▼
+Index vectoriel FAISS
+     │
+     ▼
+Question utilisateur
+     │
+     ▼
+Recherche sémantique
+     │
+     ▼
+Top 3 des chunks pertinents
+     │
+     ▼
+Prompt métier + contexte
+     │
+     ▼
+Modèle Mistral
+     │
+     ▼
+Réponse contextualisée
+```
 
-1. extraction des événements depuis OpenAgenda ;
-2. nettoyage et normalisation des données ;
-3. construction de documents textuels structurés ;
-4. découpage des documents en chunks ;
-5. calcul des embeddings ;
-6. indexation des vecteurs dans FAISS ;
-7. recherche des chunks les plus proches de la requête ;
-8. transmission du contexte au modèle Mistral ;
-9. génération d’une réponse en français.
+Cette architecture dissocie :
 
-Cette architecture permet de dissocier la base documentaire du modèle
-génératif et de fournir au modèle uniquement les informations utiles à
-la requête.
+- la collecte des données ;
+- la préparation documentaire ;
+- la recherche vectorielle ;
+- la génération de la réponse.
 
-## Collecte et préparation
+Le modèle génératif reçoit uniquement le contexte sélectionné par la
+recherche sémantique.
 
-Les données collectées comportent notamment :
+## Chunking des événements
 
-- le titre de l’événement ;
-- sa description ;
-- ses dates ;
-- son lieu ;
-- sa catégorie ;
-- ses conditions d’accès ;
-- son URL ;
-- ses informations de localisation.
+Le script :
 
-Le pipeline de préparation applique plusieurs traitements :
+```text
+scripts/chunk_events.py
+```
 
-- suppression des événements incomplets ou inutilisables ;
-- normalisation des valeurs textuelles ;
-- homogénéisation des dates ;
-- regroupement des informations utiles ;
-- suppression des contenus redondants ;
-- création d’un texte documentaire cohérent pour chaque événement.
+charge le fichier JSON nettoyé et utilise
+`RecursiveCharacterTextSplitter` pour découper les textes.
 
-## Segmentation et indexation
+Chaque chunk conserve les métadonnées utiles de l’événement :
 
-Les documents sont découpés afin de conserver des unités suffisamment
-courtes pour la recherche sémantique, tout en maintenant le contexte
-nécessaire à la génération.
+- titre ;
+- lieu ;
+- dates ;
+- catégorie ;
+- URL ;
+- informations nécessaires à la restitution.
 
-Le corpus produit :
+Le traitement produit :
 
-- **3 383 chunks documentaires** ;
-- **3 383 vecteurs indexés dans FAISS**.
+```text
+3 383 chunks
+```
 
-FAISS permet ensuite d’effectuer une recherche de similarité rapide entre
-la représentation vectorielle de la question et celles des documents.
+Ce découpage réduit la taille des documents transmis à la recherche tout en
+préservant suffisamment de contexte pour générer une recommandation utile.
 
-## Recherche et génération
+## Vectorisation et index FAISS
 
-Lorsqu’un utilisateur pose une question, le système :
+Le script :
 
-1. transforme la requête en embedding ;
+```text
+scripts/vector_store.py
+```
+
+calcule les embeddings avec Mistral puis construit l’index FAISS.
+
+Les fichiers produits sont :
+
+```text
+data/processed/faiss_index/index.faiss
+data/processed/faiss_index/index.pkl
+```
+
+L’index contient :
+
+```text
+3 383 vecteurs
+```
+
+Le nombre de vecteurs correspond exactement au nombre de chunks générés.
+
+FAISS permet ensuite de rechercher rapidement les documents les plus proches
+de la représentation vectorielle de la question utilisateur.
+
+## Fonctionnement du chatbot
+
+Le script :
+
+```text
+scripts/rag_chatbot.py
+```
+
+implémente le chatbot en ligne de commande.
+
+Pour chaque question, le traitement :
+
+1. transforme la requête en représentation vectorielle ;
 2. interroge l’index FAISS ;
-3. sélectionne les documents les plus pertinents ;
+3. récupère les trois chunks les plus proches ;
 4. construit un contexte documentaire ;
-5. transmet ce contexte au modèle Mistral ;
-6. génère une réponse synthétique.
+5. injecte le contexte et la question dans le prompt ;
+6. transmet la requête au modèle Mistral ;
+7. affiche la réponse dans le terminal.
+
+Le système vise une réponse contenant deux à quatre recommandations lorsque
+des événements pertinents sont disponibles.
+
+## Prompt métier et limitation des hallucinations
 
 Le prompt impose notamment :
 
 - une réponse en français ;
-- une sélection limitée à deux à quatre événements ;
-- des informations concrètes et vérifiables ;
 - l’utilisation exclusive du contexte récupéré ;
-- une réponse explicite lorsque la demande est hors périmètre.
+- une sélection limitée d’événements ;
+- la restitution d’informations concrètes ;
+- l’absence d’invention lorsque les données sont insuffisantes ;
+- un traitement explicite des demandes hors périmètre.
 
-## Gestion des demandes hors périmètre
+Lorsqu’une question ne concerne pas les événements culturels indexés, la
+réponse commence par une indication précisant que la demande est hors du
+périmètre du chatbot.
 
-Une règle spécifique empêche le chatbot de répondre comme un assistant
-généraliste.
+Cette règle empêche le système de se comporter comme un assistant généraliste.
 
-Lorsqu’une question ne concerne pas les événements culturels indexés,
-la réponse commence par une indication explicite signalant que la demande
-est située hors du périmètre du système.
+## Tests automatisés
 
-Cette stratégie réduit le risque d’hallucination et clarifie les limites
-fonctionnelles de l’assistant.
+Trois familles de contrôles sont fournies.
 
-## Évaluation
+### Validation de l’environnement
 
-Une campagne d’évaluation a été réalisée à partir de plusieurs catégories
-de requêtes :
+```text
+tests/test_environment.py
+```
 
-- demandes simples sur un type d’événement ;
-- recherches combinant plusieurs critères ;
-- requêtes géographiques ;
-- demandes avec contraintes temporelles ;
-- questions ne correspondant pas au périmètre culturel ;
-- formulations ambiguës ou incomplètes.
+Ce script vérifie notamment la disponibilité de :
 
-Le système a validé **20 scénarios sur 24** lors de l’évaluation finale.
+- LangChain ;
+- FAISS ;
+- NumPy ;
+- Mistral SDK.
 
-Les critères observés portaient notamment sur :
+### Validation des données OpenAgenda
 
-- la pertinence des événements retrouvés ;
-- le respect du nombre de recommandations ;
-- l’utilisation correcte du contexte ;
-- la qualité de la formulation ;
-- la gestion des demandes hors périmètre ;
-- l’absence d’informations inventées.
+```text
+tests/test_openagenda.py
+```
+
+Les tests contrôlent la qualité minimale du jeu préparé, notamment :
+
+- la présence des champs essentiels ;
+- la cohérence du nombre d’événements ;
+- le respect du périmètre géographique et métier ;
+- la validité des données nécessaires au RAG.
+
+### Validation de l’index FAISS
+
+```text
+tests/test_faiss_index.py
+```
+
+Le contrôle vérifie :
+
+- la présence de l’index ;
+- la correspondance entre chunks et vecteurs ;
+- la cohérence de la recherche sémantique ;
+- la restitution des métadonnées.
+
+Les résultats validés sont :
+
+```text
+1 336 événements
+3 383 chunks
+3 383 vecteurs FAISS
+```
+
+## Évaluation fonctionnelle
+
+Un jeu de 24 questions a été construit pour évaluer le comportement du
+chatbot.
+
+Les catégories comprennent :
+
+| Catégorie | Nombre de cas |
+|---|---:|
+| Requêtes nominales | 8 |
+| Requêtes nécessitant une inférence | 4 |
+| Demandes hors périmètre | 4 |
+| Risques d’hallucination | 4 |
+| Demandes impossibles à satisfaire | 4 |
+
+Exemples de situations testées :
+
+- recherche d’un spectacle sur l’astronomie ;
+- demande d’un événement sur l’univers pour des enfants ;
+- recherche d’une exposition scientifique hors périmètre ;
+- demande d’un concert de Taylor Swift à Paris le lendemain ;
+- recherche du meilleur spectacle de l’année suivante.
+
+Le résultat final est :
+
+```text
+22 réponses correctes sur 24
+Taux de réussite : 91,7 %
+```
+
+## Organisation du dépôt
+
+```text
+.
+├── app/
+│   └── dossier réservé à une future interface utilisateur
+├── data/
+│   ├── raw/
+│   └── processed/
+│       ├── faiss_index/
+│       │   ├── index.faiss
+│       │   └── index.pkl
+│       ├── openagenda_chunks.json
+│       ├── openagenda_paris_clean.csv
+│       ├── openagenda_paris_clean.json
+│       └── openagenda_paris_clean.parquet
+├── presentation/
+│   └── projet-11-chatbot-rag.pdf
+├── scripts/
+│   ├── chunk_events.py
+│   ├── extract_openagenda.py
+│   ├── rag_chatbot.py
+│   └── vector_store.py
+├── tests/
+│   ├── test_environment.py
+│   ├── test_faiss_index.py
+│   └── test_openagenda.py
+├── .gitignore
+├── README.md
+└── requirements.txt
+```
+
+Les principaux éléments ont les rôles suivants :
+
+| Élément | Rôle |
+|---|---|
+| `scripts/extract_openagenda.py` | Collecte, filtrage et préparation |
+| `scripts/chunk_events.py` | Découpage des événements en chunks |
+| `scripts/vector_store.py` | Création de l’index vectoriel |
+| `scripts/rag_chatbot.py` | Recherche et génération des réponses |
+| `tests/` | Contrôles techniques et qualité |
+| `data/processed/` | Données préparées et artefacts RAG |
+| `presentation/` | Présentation de soutenance |
+| `app/` | Emplacement prévu pour une future interface |
+
+Le fichier `.env` contenant les clés API reste local et n’est pas versionné.
 
 ## Résultats
 
-La version finale permet :
+Le projet aboutit à :
 
-- d’interroger un corpus de **1 336 événements** ;
-- d’effectuer une recherche dans **3 383 vecteurs FAISS** ;
-- de proposer entre deux et quatre recommandations ;
-- de restituer des réponses contextualisées en français ;
-- de filtrer les demandes hors périmètre ;
-- de séparer clairement collecte, indexation, recherche et génération.
+- un pipeline d’extraction et de préparation OpenAgenda ;
+- un corpus de 1 336 événements parisiens ;
+- 3 383 chunks documentaires ;
+- un index FAISS de 3 383 vecteurs ;
+- une recherche sémantique sur les événements ;
+- un chatbot RAG en ligne de commande ;
+- des réponses contextualisées en français ;
+- une gestion des demandes hors périmètre ;
+- des tests automatisés sur les données et l’index ;
+- un taux de réussite fonctionnelle de 91,7 %.
 
-Le système constitue un prototype fonctionnel de moteur de recommandation
-culturelle fondé sur une architecture RAG.
+Le POC valide la chaîne complète depuis la source publique jusqu’à la
+génération de recommandations.
+
+## Livrables
+
+Le projet comprend :
+
+- un script d’extraction et de préparation des données OpenAgenda ;
+- des exports nettoyés aux formats CSV, JSON et Parquet ;
+- un jeu final de 1 336 événements culturels ;
+- un script de génération des chunks ;
+- un fichier contenant 3 383 chunks textuels ;
+- un script de vectorisation et de création de l’index ;
+- un index FAISS contenant 3 383 vecteurs ;
+- un chatbot RAG exécutable en ligne de commande ;
+- un prompt métier limitant les hallucinations ;
+- trois familles de tests automatisés ;
+- un protocole d’évaluation de 24 questions ;
+- une présentation de soutenance au format PDF ;
+- une documentation technique dans le README ;
+- un dépôt GitHub public documenté.
 
 ## Difficultés rencontrées
 
 ### Qualité hétérogène des données
 
-Les événements OpenAgenda présentent des descriptions, formats et niveaux
-de détail variables.
+Les événements OpenAgenda présentent des descriptions, formats et niveaux de
+détail variables.
 
-La mise en place d’un pipeline de nettoyage et d’une structure documentaire
-commune a permis de rendre les informations plus homogènes avant
-l’indexation.
+Un pipeline de nettoyage et un champ textuel consolidé ont été nécessaires
+pour obtenir des documents suffisamment homogènes.
 
-### Taille des documents
+### Définition du périmètre métier
 
-Des documents trop longs réduisent la précision de la recherche, tandis
-que des segments trop courts perdent leur contexte.
+Les catégories OpenAgenda ne correspondent pas toujours directement au
+catalogue attendu.
 
-La stratégie de découpage a donc été ajustée afin d’obtenir un compromis
-entre granularité et conservation du sens.
+Le filtrage recherche donc plusieurs termes dans les titres, descriptions,
+mots-clés et catégories.
+
+### Taille des chunks
+
+Des chunks trop longs réduisent la précision de la recherche, tandis que des
+segments trop courts perdent leur contexte.
+
+La stratégie de découpage a été ajustée pour conserver un compromis entre
+granularité et cohérence sémantique.
+
+### Utilisation de FAISS sous Windows
+
+FAISS peut rencontrer des limitations avec les chemins synchronisés par
+Google Drive en raison de ses appels natifs.
+
+Le contournement consiste à écrire temporairement l’index dans un dossier
+local, puis à copier les fichiers vers le projet.
 
 ### Contrôle des hallucinations
 
-Le modèle génératif pouvait produire des éléments non présents dans les
-documents récupérés.
+Le modèle pouvait produire des informations absentes des documents
+récupérés.
 
-Le prompt a été renforcé afin d’imposer l’utilisation exclusive du contexte
-et d’encadrer strictement la structure des réponses.
+Le prompt a été renforcé pour imposer l’utilisation exclusive du contexte et
+signaler les demandes impossibles ou hors périmètre.
 
-### Détection du hors périmètre
+## Limites
 
-Certaines requêtes ne concernaient pas la recherche d’événements culturels.
+Le projet constitue un POC et présente plusieurs limites :
 
-Une consigne explicite et un format de réponse spécifique ont été intégrés
-pour signaler ces cas sans tenter de générer une recommandation.
+- l’interface est uniquement disponible en ligne de commande ;
+- les événements concernent uniquement Paris ;
+- le corpus couvre une période limitée ;
+- l’actualisation des données doit être relancée manuellement ;
+- l’index doit être reconstruit après chaque mise à jour du corpus ;
+- les embeddings et les réponses dépendent d’une API externe ;
+- aucune authentification utilisateur n’est fournie ;
+- aucune mémoire conversationnelle n’est implémentée ;
+- le système ne collecte pas encore de retour utilisateur ;
+- aucun déploiement cloud n’est fourni ;
+- aucun pipeline CI/CD n’est intégré.
 
-## Compétences démontrées
+## Évolutions possibles
+
+Les évolutions envisagées comprennent :
+
+- améliorer le prompt et les règles de filtrage ;
+- ajouter une interface web ;
+- automatiser la mise à jour des événements ;
+- reconstruire l’index de manière incrémentale ;
+- ajouter des filtres explicites sur la date et le lieu ;
+- intégrer une mémoire conversationnelle ;
+- ajouter un historique des requêtes ;
+- recueillir la satisfaction des utilisateurs ;
+- enrichir le protocole d’évaluation ;
+- comparer plusieurs modèles d’embeddings ;
+- comparer plusieurs modèles génératifs ;
+- déployer le chatbot dans le cloud ;
+- ajouter une API ;
+- superviser les performances et les coûts ;
+- mettre en place une chaîne CI/CD.
+
+## Compétences développées
+
+Ce projet met en œuvre les compétences suivantes :
 
 - collecte de données depuis une API ;
 - nettoyage et normalisation de données textuelles ;
 - préparation d’un corpus documentaire ;
 - conception d’une architecture RAG ;
-- découpage et indexation de documents ;
+- découpage de documents ;
+- génération d’embeddings ;
 - utilisation d’une base vectorielle FAISS ;
-- intégration d’un modèle de langage Mistral ;
+- intégration d’un modèle Mistral ;
 - développement de chaînes LangChain ;
-- conception de prompts ;
+- conception de prompts métier ;
 - réduction des hallucinations ;
+- tests automatisés de données et d’index ;
 - définition d’un protocole d’évaluation ;
-- analyse des limites d’un système d’intelligence artificielle.
+- analyse des limites d’un système d’intelligence artificielle ;
+- documentation d’un POC Data Engineering.
